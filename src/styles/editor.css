@@ -1,0 +1,62 @@
+/* ─── Editor Pane ─── */
+
+.editor-pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.editor-pane textarea {
+  flex: 1;
+  width: 100%;
+  padding: 24px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: var(--font-editor);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--text-primary);
+  background: transparent;
+  tab-size: 2;
+  scroll-behavior: smooth;
+}
+
+.editor-pane textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.editor-pane textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.editor-pane textarea::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg);
+}
+
+.editor-pane textarea::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+.editor-pane textarea::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Line numbers (optional visual guide) */
+.editor-pane .line-numbers {
+  position: absolute;
+  left: 0;
+  top: 24px;
+  width: 40px;
+  text-align: right;
+  color: var(--text-tertiary);
+  font-family: var(--font-editor);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.4;
+}
