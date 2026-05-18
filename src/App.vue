@@ -25,6 +25,7 @@ import Toolbar from "./components/Toolbar.vue";
 import EditorPane from "./components/EditorPane.vue";
 import PreviewPane from "./components/PreviewPane.vue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 
 const settingsStore = useSettingsStore();
 const editorStore = useEditorStore();
@@ -223,11 +224,42 @@ function handleKeydown(e: KeyboardEvent) {
   }
 }
 
+// ─── Menu Event Listener ───
+
+const unlisteners: UnlistenFn[] = [];
+
+async function setupMenuListeners() {
+  unlisteners.push(await listen("menu-file-new", () => newFile()));
+  unlisteners.push(await listen("menu-file-open", () => openFile()));
+  unlisteners.push(await listen("menu-file-save", () => saveFile()));
+  unlisteners.push(await listen("menu-file-save-as", () => saveFileAs()));
+  unlisteners.push(await listen("menu-edit-undo", () => editorStore.undo()));
+  unlisteners.push(
+    await listen("menu-view-split", () => settingsStore.setLayoutMode("split")),
+  );
+  unlisteners.push(
+    await listen("menu-view-preview", () =>
+      settingsStore.setLayoutMode("preview"),
+    ),
+  );
+  unlisteners.push(
+    await listen("menu-view-focus", () => settingsStore.setLayoutMode("focus")),
+  );
+  unlisteners.push(
+    await listen("menu-view-toggle-theme", () => {
+      if (settingsStore.theme === "light") settingsStore.setTheme("dark");
+      else if (settingsStore.theme === "dark") settingsStore.setTheme("system");
+      else settingsStore.setTheme("light");
+    }),
+  );
+}
+
 // ─── Lifecycle ───
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener("keydown", handleKeydown);
   updateTitle();
+  await setupMenuListeners();
 
   // Watch dirty state for title updates
   editorStore.$subscribe(() => {
@@ -237,6 +269,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener("keydown", handleKeydown);
+  unlisteners.forEach((unlisten) => unlisten());
 });
 </script>
 
